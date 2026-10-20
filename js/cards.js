@@ -1,4 +1,4 @@
-import "../vendor/anime.umd.min.js";
+import { anime, stagger } from "../vendor/anime.umd.min.js";
 
 export function initCardsAnim() {
   anime.animate(".card", {
