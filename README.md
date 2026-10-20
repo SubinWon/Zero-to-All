@@ -10,8 +10,9 @@
 - 两个页面：`index.html`（个人主页）、`text-lab.html`（文字实验室）
 - 顶部 hero 区（品牌 + 导航 + 大标题）、卡片、分数动画——和模块 1.2 展示过的最终成品 UI 一脉相承
 - 8 个 css 文件、3 个 js 文件，沿用模块 3.2 教过的"用 `<link>` 和 `<script src>` 引文件"写法
-- anime.js 通过**传统 `<script>` 标签**（IIFE 版本）从 CDN 拉过来，挂到 `window.anime` 全局
+- anime.js（v4.5.0，UMD 版本）已经下载到 `vendor/anime.umd.min.js`，通过**传统 `<script>` 标签**加载，挂到 `window.anime` 全局
 - 四个 `<script>` 必须按 **anime.js → cards.js → score.js → nav.js** 的顺序加载，错一个就崩
+- 不依赖任何 CDN，断网也能直接打开
 
 > 这套写法刚开始还能用，但项目一长大就会撞上**两件结构痛**：**顺序坑** + **全局污染**。
 > 课件里会带你亲眼撞上它们，然后一起把项目改造成 ES 模块化的版本。
@@ -26,7 +27,7 @@
 
 ```html
 <script src="js/cards.js"></script>  <!-- cards 跑的时候 anime 还没加载 -->
-<script src="https://cdn.jsdelivr.net/npm/animejs@4/lib/anime.iife.min.js"></script>
+<script src="vendor/anime.umd.min.js"></script>
 <script src="js/score.js"></script>
 <script src="js/nav.js"></script>
 ```
@@ -44,6 +45,8 @@ Uncaught ReferenceError: anime is not defined
 ## 自己动手：把它改造成模块化版本
 
 下面这五步，就是课件里带你做的那次改造。你也可以**对照着自己手动改一遍**——代码都给你了，逐个粘进去就行（不用自己写）。
+
+> 提示：当前运行依赖已本地化到 `vendor/`。下面第一、二步的 `import` 仍按课件原文使用 CDN 的 ESM 地址；如果想让模块化版本也完全离线，可以把 ESM 版本（`https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js`）下载为 `vendor/anime.esm.min.js`，再把两处 `import` 改成 `"../vendor/anime.esm.min.js"`。
 
 ### 第一步：改 `cards.js`，给它模块化
 
@@ -132,7 +135,7 @@ initScoreAnim();
 打开 `index.html`，把底部那四行 `<script>`：
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/animejs@4/lib/anime.iife.min.js"></script>
+<script src="vendor/anime.umd.min.js"></script>
 <script src="js/cards.js"></script>
 <script src="js/score.js"></script>
 <script src="js/nav.js"></script>
