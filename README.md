@@ -17,9 +17,22 @@
 > 这套写法刚开始还能用，但项目一长大就会撞上**两件结构痛**：**顺序坑** + **全局污染**。
 > 课件里会带你亲眼撞上它们，然后一起把项目改造成 ES 模块化的版本。
 
+> 注：当前仓库**已经完成**下面的五步改造（`type="module"` + 本地 `vendor/anime.esm.min.js`）。
+> 文中"改造前""顺序坑"的描述针对起点版本，想对照旧代码可以看提交 `460b69d`。
+
 ## 怎么打开
 
-直接在浏览器里双击 `index.html` 即可，无需任何工具。
+当前代码使用 ES Module，浏览器不允许通过 `file://` 加载模块，**不能直接双击 HTML**
+（模块不会加载，卡片会一直不可见）。本地临时测试用自带的小服务器：
+
+```bash
+node tools/serve.mjs        # 默认 http://127.0.0.1:8080/
+node tools/serve.mjs 3000   # 也可以指定端口
+```
+
+然后浏览器访问终端里打印的地址即可。
+
+> 如果切回"改造前"的起点版本（普通 `<script src>`，没有 `type="module"`），双击打开仍然可用。
 
 ## 想自己亲手撞一下"顺序坑"？
 
@@ -46,14 +59,15 @@ Uncaught ReferenceError: anime is not defined
 
 下面这五步，就是课件里带你做的那次改造。你也可以**对照着自己手动改一遍**——代码都给你了，逐个粘进去就行（不用自己写）。
 
-> 提示：当前运行依赖已本地化到 `vendor/`。下面第一、二步的 `import` 仍按课件原文使用 CDN 的 ESM 地址；如果想让模块化版本也完全离线，可以把 ESM 版本（`https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js`）下载为 `vendor/anime.esm.min.js`，再把两处 `import` 改成 `"../vendor/anime.esm.min.js"`。
+> 说明：anime.js 的 ESM 版本已经放在 `vendor/anime.esm.min.js`，所以下面的
+> `import` 直接指向本地文件，不依赖网络。
 
 ### 第一步：改 `cards.js`，给它模块化
 
 把 `js/cards.js` 的内容**整个替换**成：
 
 ```javascript
-import { animate, stagger } from "https://cdn.jsdelivr.net/npm/animejs@4/+esm";
+import { animate, stagger } from "../vendor/anime.esm.min.js";
 
 export function initCardsAnim() {
   animate(".card", {
@@ -66,7 +80,7 @@ export function initCardsAnim() {
 }
 ```
 
-- 顶上 `import`：明文声明"我要用 anime.js 里的 `animate` 和 `stagger`"（注意网址末尾的 `+esm`，这是 anime.js 的 **ES 模块版本**）。
+- 顶上 `import`：明文声明"我要用 anime.js 里的 `animate` 和 `stagger`"（`vendor/anime.esm.min.js` 是 anime.js 的 **ES 模块版本**）。
 - `export`：把这个函数对外开放，让别的文件能 import 它。
 
 ### 第二步：改 `score.js`，给它也模块化（顺手升级动画）
@@ -74,7 +88,7 @@ export function initCardsAnim() {
 把 `js/score.js` 的内容**整个替换**成：
 
 ```javascript
-import { animate, scrambleText } from "https://cdn.jsdelivr.net/npm/animejs@4/+esm";
+import { animate, scrambleText } from "../vendor/anime.esm.min.js";
 
 export function initScoreAnim() {
   var btn = document.querySelector(".primary-button");
