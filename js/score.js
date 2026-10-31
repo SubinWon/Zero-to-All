@@ -1,4 +1,4 @@
-import { animate, scrambleText } from "../vendor/anime.esm.min.js";
+import { animate, scrambleText } from "animejs";
 
 export function initScoreAnim() {
   var btn = document.querySelector(".primary-button");
