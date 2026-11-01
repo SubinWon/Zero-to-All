@@ -3,8 +3,9 @@
 // 想加链接、改样式？只改这一处，两个页面自动一起跟着变。
 export default function Nav({ current, onNavigate }) {
   const items = [
-    { key: "home",    label: "个人主页" },
-    { key: "textlab", label: "文字实验室" },
+    { key: "home",     label: "个人主页" },
+    { key: "textlab",  label: "文字实验室" },
+    { key: "progress", label: "开发进度" },
   ];
 
   return (

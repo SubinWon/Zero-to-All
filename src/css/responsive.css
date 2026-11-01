@@ -3,6 +3,15 @@
   .result-grid { grid-template-columns: 1fr; }
   .identity-panel { grid-template-columns: 1fr; }
   .lab-panel { min-height: auto; }
+  .progress-panel {
+    --progress-date-col: 76px;
+    --progress-col-gap: 10px;
+    --progress-dot-center: 26px;
+  }
+  .progress-date { padding-top: 18px; font-size: 12px; }
+  .progress-dot { margin-top: 20px; }
+  .progress-entry { padding: 14px 16px; }
+  .progress-entry-title { font-size: 18px; }
 }
 
 @media (max-width: 640px) {
@@ -23,4 +32,27 @@
   .identity-value,
   .result-badge strong { font-size: 24px; }
   .identity-quote { font-size: 20px; }
+  .site-notice { margin: 8px 0 14px; padding: 10px 14px; font-size: 13px; }
+  .site-footer {
+    flex-direction: column; /* 手机上图标、两条备案竖排更易读 */
+    gap: 6px;
+    padding: 14px 16px;
+    font-size: 13px;
+    text-align: center;
+  }
+  .progress-panel { --progress-dot-col: 20px; --progress-dot-center: 8px; }
+  .progress-item {
+    grid-template-columns: var(--progress-dot-col) minmax(0, 1fr);
+    grid-template-areas:
+      "dot date"
+      "dot entry";
+    column-gap: 10px;
+    row-gap: 6px;
+  }
+  .progress-item::before { left: calc(var(--progress-dot-col) * 0.5); }
+  .progress-date { grid-area: date; padding-top: 0; font-size: 12px; }
+  .progress-dot { grid-area: dot; width: 10px; height: 10px; margin-top: 3px; }
+  .progress-entry { grid-area: entry; padding: 14px 16px; }
+  .progress-entry-title { font-size: 17px; }
+  .progress-changes li { font-size: 14px; }
 }

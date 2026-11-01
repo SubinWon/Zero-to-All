@@ -11,6 +11,7 @@ import "./css/hero.css";
 import "./css/nav.css";
 import "./css/cards.css";
 import "./css/lab.css";
+import "./css/progress.css";
 import "./css/responsive.css";
 
 createRoot(document.getElementById("root")).render(

@@ -1,0 +1,108 @@
+/* === 开发进度：纵向时间线 === */
+.progress-panel {
+  --progress-date-col: 96px;
+  --progress-dot-col: 24px;
+  --progress-col-gap: 14px;
+  --progress-row-gap: 16px;
+  --progress-dot-size: 12px;
+  --progress-dot-center: 28px; /* 圆点圆心到本行顶部，也是连线起止点 */
+
+  padding: 4px 0 8px;
+}
+
+.progress-timeline {
+  display: grid;
+  row-gap: var(--progress-row-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none; /* reset.css 只重置了 ul，ol 要自己来 */
+}
+
+.progress-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--progress-date-col) var(--progress-dot-col) minmax(0, 1fr);
+  column-gap: var(--progress-col-gap);
+  align-items: start;
+}
+
+/* 连线：每行画一段，向下穿过行距接到下一颗圆点 */
+.progress-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: calc(-1 * var(--progress-row-gap));
+  left: calc(
+    var(--progress-date-col) + var(--progress-col-gap) + var(--progress-dot-col) * 0.5
+  );
+  width: 2px;
+  border-radius: 999px;
+  background: var(--border-soft);
+  transform: translateX(-50%);
+}
+
+/* 第一段从第一颗圆点开始；最后一段到最后一颗圆点结束 */
+.progress-item:first-child::before { top: var(--progress-dot-center); }
+.progress-item:last-child::before { bottom: auto; height: var(--progress-dot-center); }
+.progress-item:only-child::before { display: none; }
+
+.progress-date {
+  padding-top: 19px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.3;
+  letter-spacing: -0.12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.progress-dot {
+  position: relative;
+  z-index: 1;
+  width: var(--progress-dot-size);
+  height: var(--progress-dot-size);
+  margin: 22px auto 0;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 5px rgba(0, 113, 227, 0.16);
+}
+
+.progress-entry {
+  padding: 16px 20px;
+  border-radius: var(--radius-soft);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.progress-entry-title {
+  font-size: 19px;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.progress-changes {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.progress-changes li {
+  position: relative;
+  padding-left: 16px;
+  color: var(--text-soft);
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: -0.2px;
+}
+
+.progress-changes li::before {
+  content: "";
+  position: absolute;
+  top: 0.68em;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(0, 113, 227, 0.48);
+}

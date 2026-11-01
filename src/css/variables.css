@@ -7,6 +7,10 @@
   --text-muted: rgba(29, 29, 31, 0.56);
   --brand: #0071e3;
   --border-soft: rgba(29, 29, 31, 0.08);
+  --danger-text: #d70015;
+  --danger-bg: #fff2f0;
+  --danger-border: rgba(215, 0, 21, 0.18);
+  --surface-muted: #e8e8ed;
   --shadow: 3px 5px 30px rgba(0, 0, 0, 0.08);
   --grad: linear-gradient(294deg, #ff00f7 0%, #1e98fd 100%);
   --radius-panel: 32px;
