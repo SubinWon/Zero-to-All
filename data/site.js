@@ -26,7 +26,7 @@ export const textLab = {
 };
 
 // 全站每一页都有的内容：顶部开发提示、页脚备案信息。
-// 它们不属于 home 或 textLab，所以单独导出，两个页面共用一份。
+// 它们不属于 home 或 textLab，所以单独导出，所有页面共用一份。
 export const siteNotice = {
   text: "网站正在开发建设，非最终样式！",
 };
@@ -51,6 +51,15 @@ export const progress = {
   heroTitle: "开发进度",
   heroSubtitle: "记录这个网站的开发进度",
   entries: [
+    {
+      date: "2026-11-05",
+      title: "迁移到 Next.js",
+      changes: [
+        "改用 Next.js App Router，路由由 app/ 文件夹决定",
+        "导航改用 next/link，去掉手写 useRoute",
+        "配置静态导出，构建产物输出到 out/",
+      ],
+    },
     {
       date: "2026-11-01",
       title: "新增开发进度页面",

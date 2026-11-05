@@ -6,11 +6,11 @@ import { progress } from "../data/site.js";
 // 时间线每条记录是一个 <li>，并且带 .card：
 // AnimatedCardGrid 只给 .card 做入场动画，逐条错开 120ms。
 // 外层容器故意不加 .card/.panel——避免"卡里套卡"和动画叠加。
-export default function ProgressPage({ current, onNavigate }) {
+export default function ProgressView() {
   return (
     <AnimatedCardGrid className="dashboard-grid">
       <article className="hero-stage panel-full">
-        <Nav current={current} onNavigate={onNavigate} />
+        <Nav />
         <PageHeading title={progress.heroTitle} subtitle={progress.heroSubtitle} />
       </article>
 

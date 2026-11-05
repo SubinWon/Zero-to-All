@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 // 文字实验室的"输入区"卡片。

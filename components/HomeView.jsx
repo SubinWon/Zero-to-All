@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Nav from "./Nav.jsx";
 import PageHeading from "./PageHeading.jsx";
 import AnimatedCardGrid from "./AnimatedCardGrid.jsx";
@@ -5,13 +6,13 @@ import { home } from "../data/site.js";
 
 // 注意：这个组件里几乎一个"内容"都没写死——
 // 标题、副标题、作品文案、座右铭……全部从 site.js 的 home 里读。
-// 想改文案？打开 src/data/site.js 改一行，这个文件一个字都不用动。
-export default function HomePage({ current, onNavigate }) {
+// 想改文案？打开 data/site.js 改一行，这个文件一个字都不用动。
+export default function HomeView() {
   return (
     <AnimatedCardGrid className="dashboard-grid">
       {/* 复用：Nav 和 PageHeading 都和文字实验室共享，只是 PageHeading 的 props 换了内容 */}
       <article className="hero-stage panel-full">
-        <Nav current={current} onNavigate={onNavigate} />
+        <Nav />
         <PageHeading title={home.heroTitle} subtitle={home.heroSubtitle} />
       </article>
 
@@ -20,14 +21,10 @@ export default function HomePage({ current, onNavigate }) {
         <p className="section-kicker">{home.featuredWork.kicker}</p>
         <p className="featured-title">{home.featuredWork.title}</p>
         <p className="featured-copy">{home.featuredWork.copy}</p>
-        <a
-          className="featured-link"
-          href="#"
-          onClick={(e) => { e.preventDefault(); onNavigate("textlab"); }}
-        >
+        <Link className="featured-link" href="/text-lab/">
           <span className="featured-link-label">{home.featuredWork.linkLabel}</span>
           <span className="arrow">›</span>
-        </a>
+        </Link>
       </article>
 
       <article className="panel panel-full identity-panel card">

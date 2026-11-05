@@ -1,175 +1,88 @@
-# zero-to-tech-4-1（模块 4.1 配套代码）
+# Zero to Tech
 
-> 这是 **零到全栈 · 模块 4.1：现代前端第一步——模块化** 的配套代码——
-> 网站**模块化改造之前**的起点版本。
+个人站点：项目、创意、灵感、心得与作品。
 
-跟着这一节课件一步步改下来，你会把它改造成 ES 模块化的版本——这份模块化成果，就是 4.2 那一节的出发点（下一节我们在它基础上配 Vite 工具链）。
+## 技术栈
 
-## 它当前是什么样
+- **Next.js 16**（App Router，静态导出）
+- **React 19**
+- **anime.js 4**：卡片入场动画、结果区数字滚动
+- **原生 CSS**：9 个全局样式文件，无 CSS 框架
 
-- 两个页面：`index.html`（个人主页）、`text-lab.html`（文字实验室）
-- 顶部 hero 区（品牌 + 导航 + 大标题）、卡片、分数动画——和模块 1.2 展示过的最终成品 UI 一脉相承
-- 8 个 css 文件、3 个 js 文件，沿用模块 3.2 教过的"用 `<link>` 和 `<script src>` 引文件"写法
-- anime.js（v4.5.0，UMD 版本）已经下载到 `vendor/anime.umd.min.js`，通过**传统 `<script>` 标签**加载，挂到 `window.anime` 全局
-- 四个 `<script>` 必须按 **anime.js → cards.js → score.js → nav.js** 的顺序加载，错一个就崩
-- 不依赖任何 CDN，断网也能直接打开
-
-> 这套写法刚开始还能用，但项目一长大就会撞上**两件结构痛**：**顺序坑** + **全局污染**。
-> 课件里会带你亲眼撞上它们，然后一起把项目改造成 ES 模块化的版本。
-
-> 注：当前仓库**已经完成**下面的五步改造（`type="module"` + 本地 `vendor/anime.esm.min.js`）。
-> 文中"改造前""顺序坑"的描述针对起点版本，想对照旧代码可以看提交 `460b69d`。
-
-## 怎么打开
-
-当前代码使用 ES Module，浏览器不允许通过 `file://` 加载模块，**不能直接双击 HTML**
-（模块不会加载，卡片会一直不可见）。本地临时测试用自带的小服务器：
+## 开发
 
 ```bash
-node tools/serve.mjs        # 默认 http://127.0.0.1:8080/
-node tools/serve.mjs 3000   # 也可以指定端口
+npm install
+npm run dev
 ```
 
-然后浏览器访问终端里打印的地址即可。
+打开 <http://localhost:3000>。
 
-> 如果切回"改造前"的起点版本（普通 `<script src>`，没有 `type="module"`），双击打开仍然可用。
+## 构建与部署
 
-## 想自己亲手撞一下"顺序坑"？
-
-把 `index.html` 底部前两行 `<script>` 调换：
-
-```html
-<script src="js/cards.js"></script>  <!-- cards 跑的时候 anime 还没加载 -->
-<script src="vendor/anime.umd.min.js"></script>
-<script src="js/score.js"></script>
-<script src="js/nav.js"></script>
+```bash
+npm run build
 ```
 
-刷新页面、F12 看控制台——一行刺眼的红字：
+`next.config.mjs` 里启用了 `output: "export"`，构建产物是纯静态站点，位于 `out/`。把整个 `out/` 目录上传到静态服务器（如 Nginx）即可，不需要 Node 运行环境。
 
+本地预览构建产物：
+
+```bash
+npm run preview   # http://localhost:4173
 ```
-Uncaught ReferenceError: anime is not defined
-```
 
-卡片动画当场报废。这就是"靠 `<script>` 顺序维持依赖"的脆弱——课件里讲的两件结构痛之一。
+Nginx 参考配置：
 
-实验做完，记得把两行调回原顺序。
+```nginx
+root /var/www/zero-to-all/out;
+index index.html;
 
-## 自己动手：把它改造成模块化版本
+location /_next/static/ {
+  add_header Cache-Control "public, max-age=31536000, immutable";
+  try_files $uri =404;
+}
 
-下面这五步，就是课件里带你做的那次改造。你也可以**对照着自己手动改一遍**——代码都给你了，逐个粘进去就行（不用自己写）。
-
-> 说明：anime.js 的 ESM 版本已经放在 `vendor/anime.esm.min.js`，所以下面的
-> `import` 直接指向本地文件，不依赖网络。
-
-### 第一步：改 `cards.js`，给它模块化
-
-把 `js/cards.js` 的内容**整个替换**成：
-
-```javascript
-import { animate, stagger } from "../vendor/anime.esm.min.js";
-
-export function initCardsAnim() {
-  animate(".card", {
-    opacity: [0, 1],
-    translateY: [24, 0],
-    delay: stagger(120),
-    duration: 700,
-    ease: "outBack",
-  });
+location / {
+  try_files $uri $uri/ $uri.html /404.html;
 }
 ```
 
-- 顶上 `import`：明文声明"我要用 anime.js 里的 `animate` 和 `stagger`"（`vendor/anime.esm.min.js` 是 anime.js 的 **ES 模块版本**）。
-- `export`：把这个函数对外开放，让别的文件能 import 它。
+每次部署请整体替换 `out/`，避免残留旧的哈希资源。
 
-### 第二步：改 `score.js`，给它也模块化（顺手升级动画）
+## 目录结构
 
-把 `js/score.js` 的内容**整个替换**成：
-
-```javascript
-import { animate, scrambleText } from "../vendor/anime.esm.min.js";
-
-export function initScoreAnim() {
-  var btn = document.querySelector(".primary-button");
-  var scoreEl = document.querySelector("[data-score]");
-  if (!btn || !scoreEl) return;
-
-  btn.addEventListener("click", function () {
-    animate(scoreEl, {
-      innerHTML: scrambleText({ chars: "0-9" }),
-      duration: 1500,
-    });
-  });
-}
+```text
+app/                 页面与路由（文件夹即路由）
+  layout.jsx         全站骨架：开发提示 + 备案页脚 + 全局样式
+  page.jsx           /
+  text-lab/page.jsx  /text-lab/
+  progress/page.jsx  /progress/
+components/          可复用组件
+css/                 全局样式（responsive.css 必须最后导入）
+data/site.js         所有页面文案、备案信息、开发进度
+img/                 静态图片
+next.config.mjs      静态导出配置
 ```
 
-- 套路和第一步一样：上面 `import`、下面 `export`。
-- 顺手把原来 `setInterval` 手写的数字滚动，换成了 anime.js 的 `scrambleText` 特效（这个特效只在 ES 模块版本里才有）。
-- 注意 `scrambleText({ chars: "0-9" })` 里的 `chars: "0-9"`——它告诉 scrambleText**滚动时只用数字 0~9**。不加这个参数的话，它默认会用字母、符号一起洗，分数滚动过程中就会闪过一堆字母，不像在"算数字"。
+## 页面
 
-### 第三步：改 `nav.js`，给它也模块化
+| 路径 | 说明 |
+| --- | --- |
+| `/` | 个人主页 |
+| `/text-lab/` | 文字实验室 |
+| `/progress/` | 开发进度时间线 |
 
-把 `js/nav.js` 的内容**整个替换**成：
+开启 `trailingSlash` 后，子页面地址统一带结尾斜杠。
 
-```javascript
-export function initNav() {
-  var path = location.pathname.split("/").pop() || "index.html";
-  var links = document.querySelectorAll(".nav-link");
-  for (var i = 0; i < links.length; i++) {
-    var href = links[i].getAttribute("href");
-    if (href === path) links[i].classList.add("active");
-    else links[i].classList.remove("active");
-  }
-}
-```
+## 内容维护
 
-- 对比一下改造前后：**只有头尾变了**——外层的 `(function () { ... })()` 立即执行包裹，换成了 `export function initNav() { ... }`，中间逻辑一字未改。
-- 模块化只管"怎么对外暴露"，不会逼你改写内部逻辑。
+网站上的文案、作品信息、备案链接和开发进度都集中在 `data/site.js`：
 
-### 第四步：新建 `main.js`，作为整个项目的总入口
+- `home`：首页内容
+- `textLab`：文字实验室标题
+- `siteNotice`：顶部开发提示
+- `siteFooter`：备案图标文案与链接
+- `progress`：开发进度记录（最新在上）
 
-在 `js/` 目录下**新建一个文件** `js/main.js`，写入：
-
-```javascript
-import { initNav } from "./nav.js";
-import { initCardsAnim } from "./cards.js";
-import { initScoreAnim } from "./score.js";
-
-initNav();
-initCardsAnim();
-initScoreAnim();
-```
-
-- 它把前三个文件 `export` 出来的函数分别 `import` 进来，再挨个调用一遍。
-- 说白了，它就是整个页面的"总开关"。
-
-### 第五步：改两个 HTML，把四行 `<script>` 收成一行
-
-打开 `index.html`，把底部那四行 `<script>`：
-
-```html
-<script src="vendor/anime.umd.min.js"></script>
-<script src="js/cards.js"></script>
-<script src="js/score.js"></script>
-<script src="js/nav.js"></script>
-```
-
-**整个删掉，换成一行**：
-
-```html
-<script type="module" src="js/main.js"></script>
-```
-
-`text-lab.html` 那边**也有同样的四行**，照样删掉、换成这一行。
-
-> 改完之后，**别再双击 `index.html` 打开了**——ES 模块必须通过"服务器"提供才能加载，浏览器不允许 `file://` 直接打开（会白屏 + CORS 报错）。
-> 把项目部署到模块 3.5 那台 Nginx 服务器上（push → 服务器 pull → 指向它），再用公网 IP 访问，就能看到改造后的效果了。
-
-改完这五步，你就拿到了 4.1 的模块化成果——也就是 4.2 那一节的出发点。
-
-## 这一节最该带走的一句话
-
-> 项目长大了，"全堆在一起 + 手排 `<script>` 顺序 + 全靠 window 全局"的旧组织方式撑不住了。
-> **模块化**把每个文件的依赖写进代码里、给每个文件一份独立作用域——
-> 这就是工程化迈出的第一步。
+改内容只需要动这一个文件，组件代码不用碰。
